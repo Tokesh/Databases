@@ -1,6 +1,9 @@
 /*
  Ex 1.
  */
+select * from course where credits > 3;/*
+ Ex 1.
+ */
 select * from course where credits > 3;
 
 select * from classroom where building = 'Watson' or building = 'Packard';
@@ -58,7 +61,3 @@ and takes.year = teaches.year and takes.course_id = teaches.course_id and teache
 
 select distinct time_slot_id from time_slot where end_hr < 13;
 select section.course_id from section where section.time_slot_id in (select distinct time_slot_id from time_slot where end_hr < 13);
-
-
-
-
