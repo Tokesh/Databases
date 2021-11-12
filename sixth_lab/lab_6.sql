@@ -1,3 +1,13 @@
+drop table sell;
+drop table client;
+drop table dealer;
+drop view first_view;
+drop view second_view;
+drop view third_view;
+drop view fourth_view;
+drop view fifth_view;
+drop view sixth_view;
+
 --1A combine each row of dealer table with each row of client table
 select * from client inner join dealer on dealer.id = client.dealer_id;
 
@@ -72,7 +82,7 @@ select * from sixth_view;
 
 --2G Find cities where total expenses more than total amount of sales in locations
 select location from sell inner join dealer on dealer_id = dealer.id
-     where (amount*dealer.charge+amount) > sell.amount group by dealer.location ;
+     where (amount*dealer.charge+amount) > sell.amount group by dealer.location;
 
 
 
