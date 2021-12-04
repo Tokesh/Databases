@@ -1,105 +1,3 @@
-drop table stores cascade;
-drop table brands cascade;
-drop table clients cascade;
-drop table delivery_status cascade;
-drop table order_delivery cascade;
-drop table order_items cascade;
-drop table orders cascade ;
-drop table payment cascade ;
-drop table product_type cascade ;
-drop table products cascade ;
-drop table store_inventory cascade ;
-drop table vendor_delivery cascade ;
-drop table vendors cascade ;
-
-create table stores(
-    store_id SERIAL PRIMARY KEY,
-    state_name VARCHAR(100) CHECK(length(state_name) >= 5 and length(state_name) <= 30),
-    city VARCHAR(100) CHECK(length(city) >= 5 and length(city) <= 40),
-    street VARCHAR(255) not null,
-    house_number VARCHAR(15) not null,
-    phone_number VARCHAR not null CHECK(length(phone_number) >= 5 and length(state_name) <= 15)
-);
-create table clients(
-    client_id SERIAL PRIMARY KEY,
-    client_type varchar(7),
-    client_name VARCHAR(150),
-    date_of_birth date ,
-    gender VARCHAR(15),
-    phone_number VARCHAR not null CHECK(length(phone_number) >= 5 and length(phone_number) <= 15)
-);
-create table order_delivery(
-    order_delivery_id SERIAL primary key,
-    address varchar not null
-);
-
-create table delivery_status(
-    delivery_status_id serial primary key,
-    order_delivery_id integer references order_delivery(order_delivery_id),
-    date_time date not null,
-    status varchar(80)
-);
-
-create table payment(
-    payment_id serial primary key,
-    summ float8 not null CHECK(summ > 0),
-    total_price float8 not null,
-    payment_type varchar(50)
-);
-create table orders(
-    order_id serial primary key,
-    client_id integer references clients(client_id),
-    delivery_number_id integer references order_delivery(order_delivery_id),
-    payment_id integer references payment(payment_id),
-    store_id integer references stores(store_id),
-    date_time date not null,
-    cash_air integer
-);
-
-create table brands(
-    brand_id serial primary key,
-    brand_name varchar(50)
-);
-create table vendors(
-    vendor_id serial primary key,
-    vendor_name varchar(50),
-    address varchar(50) CHECK(length(address) >= 5 and length(address) <= 50),
-    phone_number varchar(15)
-);
-create table vendor_delivery(
-    vendor_delivery_id serial primary key,
-    vendor_id integer references vendors(vendor_id),
-    brand_id integer references brands(brand_id)
-);
-
-create table product_type(
-    product_type_id serial primary key,
-    product_type varchar(30),
-    parent_id_ref integer
-);
-
-create table products(
-    product_id serial primary key,
-    product_type_id integer references product_type(product_type_id),
-    upc_code varchar(20) unique,
-    title text
-);
-
-create table order_items(
-    order_items_id serial primary key,
-    order_id integer references orders(order_id),
-    product_id integer references products(product_id),
-    count float8 not null default 1.0
-);
-
-create table store_inventory(
-    store_inventory_id serial primary key ,
-    store_id integer references stores(store_id),
-    product_id integer references products(product_id),
-    brand_id integer references brands(brand_id),
-    price float8 not null CHECK( price > 0),
-    quantity float8 CHECK(quantity >= 0)
-);
 insert into stores(state_name, city, street, house_number, phone_number)
 values('Alabama', 'Altoona', ' Alabama State Route', '132', '205-200-5845');
 insert into stores(state_name, city, street, house_number, phone_number)
@@ -287,6 +185,7 @@ insert into brands(brand_name) values('Hippeas');
 insert into brands(brand_name) values('Halo Top');
 insert into brands(brand_name) values('Kite Hill');
 insert into brands(brand_name) values('KIND Snacks');
+insert into brands(brand_name) values('Happy Tokesh');
 
 
 insert into vendors(vendor_name, address, phone_number) values('Championship Food', '1451 West Trail', '922-064-9499');
@@ -425,7 +324,6 @@ insert into vendor_delivery(vendor_id, brand_id) values(22, 2);
 insert into vendor_delivery(vendor_id, brand_id) values(22, 9);
 insert into vendor_delivery(vendor_id, brand_id) values(22, 26);
 insert into vendor_delivery(vendor_id, brand_id) values(22, 8);
-insert into vendor_delivery(vendor_id, brand_id) values(23, 27);
 insert into vendor_delivery(vendor_id, brand_id) values(23, 1);
 insert into vendor_delivery(vendor_id, brand_id) values(23, 15);
 insert into vendor_delivery(vendor_id, brand_id) values(23, 4);
@@ -752,7 +650,6 @@ insert into payment(summ, total_price, payment_type) values(15,15.75, 'cash');
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(35, null, 31, 2, '2014-06-14', 9);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(1, 16, 14, 15, '2015-01-27', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(11, null, 48, 5, '2017-02-08', 3);
-insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(11, 9, 15, 28, '2010-08-02', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(85, 5, 20, 3, '2012-04-23', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(12, null, 23, 1, '2011-05-19', 10);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(69, null, 36, 15, '2014-02-18', 10);
@@ -762,7 +659,6 @@ insert into orders(client_id, delivery_number_id, payment_id, store_id, date_tim
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(78, null, 12, 15, '2013-11-10', 4);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(82, null, 41, 8, '2021-02-02', 10);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(101, null, 30, 1, '2017-04-20', 7);
-insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(34, null, 43, 28, '2015-02-19', 8);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(63, 12, 42, 14, '2017-12-02', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(9, null, 6, 4, '2018-06-18', 4);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(86, null, 10, 19, '2015-03-03', 9);
@@ -790,10 +686,8 @@ insert into orders(client_id, delivery_number_id, payment_id, store_id, date_tim
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(83, 10, 50, 13, '2014-10-04', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(45, null, 38, 13, '2019-01-03', 5);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(28, null, 18, 25, '2019-05-06', 9);
-insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(31, 18, 33, 28, '2016-05-22', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(30, 19, 5, 12, '2016-04-11', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(74, 18, 46, 22, '2019-11-05', null);
-insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(43, 13, 47, 28, '2014-06-01', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(66, 19, 26, 14, '2010-04-04', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(6, 14, 45, 11, '2017-11-07', null);
 insert into orders(client_id, delivery_number_id, payment_id, store_id, date_time, cash_air) values(34, null, 16, 22, '2015-11-14', 10);
@@ -876,8 +770,6 @@ insert into order_items(order_id, product_id, count) values(3, 47, 11);
 insert into order_items(order_id, product_id, count) values(3, 59, 6);
 insert into order_items(order_id, product_id, count) values(3, 8, 8);
 insert into order_items(order_id, product_id, count) values(3, 31, 17);
-insert into order_items(order_id, product_id, count) values(4, 33, 6);
-insert into order_items(order_id, product_id, count) values(4, 63, 13);
 insert into order_items(order_id, product_id, count) values(4, 67, 17);
 insert into order_items(order_id, product_id, count) values(4, 46, 6);
 insert into order_items(order_id, product_id, count) values(4, 28, 18);
@@ -1520,34 +1412,7 @@ insert into order_items(order_id, product_id, count) values(94, 60, 15);
 insert into order_items(order_id, product_id, count) values(94, 33, 17);
 insert into order_items(order_id, product_id, count) values(94, 68, 14);
 insert into order_items(order_id, product_id, count) values(94, 29, 19);
-insert into order_items(order_id, product_id, count) values(95, 70, 16);
-insert into order_items(order_id, product_id, count) values(95, 67, 3);
-insert into order_items(order_id, product_id, count) values(95, 36, 17);
-insert into order_items(order_id, product_id, count) values(95, 19, 19);
-insert into order_items(order_id, product_id, count) values(95, 10, 9);
-insert into order_items(order_id, product_id, count) values(95, 40, 18);
-insert into order_items(order_id, product_id, count) values(95, 23, 4);
-insert into order_items(order_id, product_id, count) values(95, 52, 6);
-insert into order_items(order_id, product_id, count) values(95, 19, 18);
-insert into order_items(order_id, product_id, count) values(96, 57, 8);
-insert into order_items(order_id, product_id, count) values(96, 1, 4);
-insert into order_items(order_id, product_id, count) values(96, 10, 19);
-insert into order_items(order_id, product_id, count) values(96, 67, 11);
-insert into order_items(order_id, product_id, count) values(96, 27, 19);
-insert into order_items(order_id, product_id, count) values(96, 69, 15);
-insert into order_items(order_id, product_id, count) values(96, 49, 17);
-insert into order_items(order_id, product_id, count) values(97, 64, 4);
-insert into order_items(order_id, product_id, count) values(97, 47, 17);
-insert into order_items(order_id, product_id, count) values(97, 42, 7);
-insert into order_items(order_id, product_id, count) values(97, 41, 7);
-insert into order_items(order_id, product_id, count) values(97, 52, 3);
-insert into order_items(order_id, product_id, count) values(98, 64, 19);
-insert into order_items(order_id, product_id, count) values(98, 58, 7);
-insert into order_items(order_id, product_id, count) values(98, 69, 8);
-insert into order_items(order_id, product_id, count) values(98, 47, 4);
-insert into order_items(order_id, product_id, count) values(98, 12, 1);
 
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 1, 27, 1022, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 2, 12, 2033, 1020);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 3, 20, 1744, 1372);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 4, 20, 362, 4557);
@@ -1567,7 +1432,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 18, 4, 810, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 19, 17, 266, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 20, 12, 1910, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 21, 27, 1665, 2483);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 22, 18, 932, 3432);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 23, 11, 880, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 24, 3, 148, 3759);
@@ -1620,7 +1484,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 71, 24, 2363, 4432);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 72, 12, 2440, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 73, 26, 1420, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(1, 74, 27, 124, 2670);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 1, 1, 2458, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 2, 21, 2400, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 3, 25, 2020, 2845);
@@ -1633,21 +1496,17 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 10, 22, 552, 3255);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 11, 8, 2218, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 12, 17, 745, 2836);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 13, 27, 1759, 1008);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 14, 22, 2161, 3267);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 15, 15, 1529, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 16, 1, 748, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 17, 2, 509, 791);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 18, 27, 1136, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 19, 9, 479, 1451);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 20, 23, 275, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 21, 17, 1925, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 22, 4, 2101, 3327);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 23, 24, 893, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 24, 12, 160, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 25, 27, 480, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 26, 26, 648, 4057);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 27, 27, 568, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 28, 1, 767, 1451);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 29, 3, 478, 2099);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 30, 15, 204, 0);
@@ -1693,13 +1552,11 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 70, 5, 2447, 3050);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 71, 20, 1366, 4783);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 72, 15, 346, 4379);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 73, 27, 91, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(2, 74, 15, 2112, 3541);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 1, 24, 514, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 2, 7, 2415, 3235);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 3, 11, 1658, 2008);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 4, 18, 1955, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 5, 27, 2454, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 6, 10, 601, 3880);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 7, 18, 1601, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(3, 8, 14, 875, 0);
@@ -1785,7 +1642,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 14, 18, 713, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 15, 4, 1092, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 16, 2, 1824, 2667);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 17, 27, 963, 4134);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 18, 9, 650, 1567);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 19, 20, 2164, 4580);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 20, 5, 1274, 4011);
@@ -1827,7 +1683,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 56, 3, 217, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 57, 6, 507, 2040);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 58, 26, 1290, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 59, 27, 153, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 60, 10, 2447, 3923);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 61, 24, 1172, 3496);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 62, 21, 1960, 3121);
@@ -1836,17 +1691,14 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 65, 5, 2370, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 66, 12, 1239, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 67, 23, 1706, 2601);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 68, 27, 2133, 2646);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 69, 3, 2316, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 70, 19, 1552, 2170);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 71, 6, 1200, 2746);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 72, 9, 139, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 73, 11, 852, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(4, 74, 13, 2177, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 1, 27, 2500, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 2, 24, 1074, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 3, 5, 1752, 3459);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 4, 27, 2156, 2972);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 5, 13, 1154, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 6, 19, 641, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 7, 2, 2343, 1282);
@@ -1893,7 +1745,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 48, 14, 1284, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 49, 15, 506, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 50, 3, 2088, 4511);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 51, 27, 2037, 2398);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 52, 16, 1763, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 53, 25, 2114, 3338);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 54, 15, 1660, 0);
@@ -1903,7 +1754,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 58, 16, 601, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 59, 3, 911, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 60, 4, 1101, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 61, 27, 573, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 62, 9, 240, 884);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 63, 16, 1149, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(5, 64, 10, 2103, 0);
@@ -1921,7 +1771,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 2, 2, 105, 3825);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 3, 19, 596, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 4, 12, 2414, 1201);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 5, 27, 478, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 6, 5, 1840, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 7, 13, 601, 4633);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 8, 14, 2125, 4456);
@@ -1945,7 +1794,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 26, 16, 1532, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 27, 17, 1795, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 28, 26, 199, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 29, 27, 1936, 3097);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 30, 1, 546, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 31, 11, 953, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(6, 32, 22, 2324, 1999);
@@ -1998,12 +1846,10 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 5, 9, 1017, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 6, 22, 2063, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 7, 12, 95, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 8, 27, 2107, 4400);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 9, 13, 1388, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 10, 18, 2458, 3496);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 11, 24, 196, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 12, 22, 1818, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 13, 27, 2057, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 14, 11, 198, 3657);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 15, 5, 1924, 805);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 16, 14, 984, 4408);
@@ -2014,10 +1860,8 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 21, 17, 1216, 1894);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 22, 23, 1268, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 23, 1, 449, 2494);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 24, 27, 1502, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 25, 17, 796, 4155);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 26, 9, 511, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 27, 27, 718, 4921);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 28, 5, 523, 730);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 29, 25, 477, 2694);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 30, 9, 536, 2588);
@@ -2038,7 +1882,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 45, 18, 2346, 2207);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 46, 6, 298, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 47, 25, 1775, 1985);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 48, 27, 2458, 3468);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 49, 13, 449, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 50, 19, 1332, 1563);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 51, 26, 1038, 1157);
@@ -2060,16 +1903,13 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 67, 16, 2328, 4885);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 68, 12, 1414, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 69, 15, 1677, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 70, 27, 2341, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 71, 12, 1697, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 72, 13, 157, 1171);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 73, 26, 1109, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(7, 74, 20, 2022, 4716);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 1, 27, 1075, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 2, 2, 865, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 3, 13, 272, 1862);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 4, 23, 505, 4612);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 5, 27, 2464, 1402);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 6, 22, 1385, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 7, 26, 2064, 1550);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(8, 8, 25, 1875, 0);
@@ -2150,7 +1990,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 9, 20, 759, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 10, 12, 622, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 11, 24, 924, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 12, 27, 710, 2468);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 13, 13, 1248, 1975);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 14, 15, 298, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 15, 18, 1823, 3050);
@@ -2198,8 +2037,6 @@ insert into store_inventory(store_id, product_id, brand_id, price, quantity) val
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 57, 19, 1440, 940);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 58, 4, 1786, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 59, 4, 1431, 2171);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 60, 27, 2119, 0);
-insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 61, 27, 1732, 0);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 62, 16, 2452, 1318);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 63, 10, 143, 4630);
 insert into store_inventory(store_id, product_id, brand_id, price, quantity) values(9, 64, 27, 107, 0);

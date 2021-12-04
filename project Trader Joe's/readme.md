@@ -5,7 +5,4 @@ It was the most pleasant for me to work with this project. I consolidated my kno
 
 
 
-Creating tables, inserting data, adding constraints => project.sql
-Using queries, creating index => project_queries
-ER-Model => final_version.drawio
-Python generators for inserts => folder(Generators)
+Drop, creating tables => DDL || Inserts => DML(Populate relations) || Generators => generators(folder) || Task 4, queries => DML(Select) || ER model => er_model.pdf or drawIO_er_model.drawio
